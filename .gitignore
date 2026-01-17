@@ -1,7 +1,6 @@
 dental_dataset
-dataset_for_yolo
+dataset_for_yolo_proper
 runs
-dataset_for_yolo_split
 yolo11n.pt
 yolov8n-cls.pt
 yolov8n.pt
