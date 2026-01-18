@@ -124,7 +124,7 @@ def test_step(data_loader: torch.utils.data.DataLoader,
               device: torch.device = device):
     """Performs test step of the model"""
     test_loss, test_accuracy = 0, 0
-    predictions, labels = [],[]
+    predictions, labels, probabilities = [],[],[]
     model.to(device)
     #Set model to evaluation mode
     model.eval() 
@@ -137,6 +137,9 @@ def test_step(data_loader: torch.utils.data.DataLoader,
             
             #Perform forward pass
             test_pred = model(X)
+
+            #calculation of probaility using softtmax, for ROC curves
+            probs = torch.softmax(test_pred, dim=1) 
             
             
             #Calculate testing loss and accuracy
@@ -147,11 +150,14 @@ def test_step(data_loader: torch.utils.data.DataLoader,
 
             predictions.append(test_pred.argmax(dim=1))
             labels.append(y)
+            probabilities.append(probs) 
 
         predictions = torch.cat(predictions)
         labels = torch.cat(labels)
+        probabilities = torch.cat(probabilities)
 
         precision, recall, f1 = precision_recall_f1(labels, predictions)
         test_loss /= len(data_loader)
         test_accuracy /= len(data_loader)
-        print(f"Test loss: {test_loss:.5f} | Test accuracy: {test_accuracy:.2f}% | Precision:{precision:.4f} | Recall :{recall:.4f} | f1-score: {f1:.4f}")
+        print(f"Test loss: {test_loss:.5f} | Test accuracy: {test_accuracy:.2f}% | Precision:{precision:.4f} | Recall :{recall:.4f} | f1-score: {f1:.4f}") 
+    return predictions, labels, probabilities
